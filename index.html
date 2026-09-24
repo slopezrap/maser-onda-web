@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MaSer ONDA</title>
+<meta name="description" content="MaSer ONDA es una app móvil de compañía entre personas adultas. Cuando necesites compañía, lanza una ONDA: una conversación temporal por chat o voz, para dos o tres, sin feed y sin tener que explicarte.">
+<meta name="theme-color" content="#B63E57">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MaSer ONDA · Compañía cuando la necesitas">
+<meta property="og:description" content="Cuando necesites compañía, lanza una ONDA. Una conversación temporal por chat o voz con una o dos personas disponibles. Sin feed, sin likes, sin rechazo visible.">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://slopezrap.github.io/maser-onda-web/">
+<link rel="canonical" href="https://slopezrap.github.io/maser-onda-web/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='22' fill='%23B63E57'/%3E%3Ccircle cx='48' cy='48' r='7' fill='%23FFF9F7'/%3E%3Ccircle cx='48' cy='48' r='17' stroke='%23FFF9F7' stroke-width='5' fill='none'/%3E%3Ccircle cx='48' cy='48' r='29' stroke='%23FFF9F7' stroke-width='4' fill='none' opacity='.55'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300..700;1,7..72,300..700&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap">
+<style>
+/* ---------- Tokens. Los de color vienen de la app (onda_tokens.dart / UI-SHELL-006). ---------- */
+:root{
+  --bg:#FFF9F7; --surface:#FFFFFF; --ink:#182230; --muted:#475467;
+  --coral:#B63E57; --coral-soft:#FFE8EC; --coral-ink:#8F2F44;
+  --teal:#0B6673; --teal-soft:#E3F1F3;
+  --sep:#EFE7E4; --border:#D9D2CE;
+  --ok:#087A5B; --ok-soft:#E7F4EF;
+  --warn-soft:#FFF1E6; --warn-ink:#8A5A12;
+  --shadow-1:0 1px 2px rgba(24,34,48,.08);
+  --shadow-3:0 3px 8px rgba(24,34,48,.12);
+  --header-bg:rgba(255,249,247,.86); --on-coral:#FFFFFF;
+  --r-control:8px; --r-card:12px; --r-presence:20px; --r-pill:999px;
+  --display:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#171B22; --surface:#1F242D; --ink:#F4EFED; --muted:#B0B7C1;
+    --coral:#E4708A; --coral-soft:#3A2129; --coral-ink:#F1A2B3;
+    --teal:#58B7C4; --teal-soft:#16333A;
+    --sep:#2B313B; --border:#3D444F;
+    --ok:#5CC39E; --ok-soft:#16352B;
+    --warn-soft:#3A2C1A; --warn-ink:#E8B36A;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-3:0 3px 10px rgba(0,0,0,.5);
+    --header-bg:rgba(23,27,34,.86); --on-coral:#171B22;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171B22; --surface:#1F242D; --ink:#F4EFED; --muted:#B0B7C1;
+  --coral:#E4708A; --coral-soft:#3A2129; --coral-ink:#F1A2B3;
+  --teal:#58B7C4; --teal-soft:#16333A;
+  --sep:#2B313B; --border:#3D444F;
+  --ok:#5CC39E; --ok-soft:#16352B;
+  --warn-soft:#3A2C1A; --warn-ink:#E8B36A;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-3:0 3px 10px rgba(0,0,0,.5);
+  --header-bg:rgba(23,27,34,.86); --on-coral:#171B22;
+  color-scheme:dark;
+}
+
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+img,svg{max-width:100%}
+a{color:var(--teal);text-underline-offset:.15em}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:16px;top:-48px;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:var(--r-control);z-index:100}
+.skip:focus{top:16px}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.eyebrow{font-size:.8125rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.voice{font-family:var(--display);font-style:italic;font-weight:400;font-optical-sizing:auto;color:var(--coral-ink)}
+h2{font-family:var(--sans);font-weight:300;font-size:clamp(1.75rem,3.2vw,2.5rem);line-height:1.15;letter-spacing:-.01em}
+h2 b{font-weight:600}
+.lead{font-size:1.25rem;line-height:1.5;color:var(--muted);max-width:60ch}
+.muted{color:var(--muted)}
+section{padding-block:clamp(56px,8vw,104px)}
+.sec-head{display:flex;flex-direction:column;gap:12px;max-width:62ch;margin-bottom:clamp(32px,5vw,56px)}
+
+/* ---------- Cabecera ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--header-bg);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--sep)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand .iso{width:28px;height:28px;flex:0 0 auto}
+.wordmark{font-size:1.375rem;line-height:1;letter-spacing:-.01em;white-space:nowrap}
+.wordmark .m1{font-weight:300}
+.wordmark .m2{font-weight:600}
+.nav{display:flex;gap:4px;align-items:center}
+.nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:.9375rem;padding:8px 12px;border-radius:var(--r-pill)}
+.nav a:hover{color:var(--ink);background:var(--coral-soft)}
+.nav .cta{color:var(--on-coral);background:var(--coral)}
+.nav .cta:hover{color:var(--on-coral);background:var(--coral-ink)}
+@media (max-width:700px){.nav a:not(.cta){display:none}}
+
+/* ---------- Héroe ---------- */
+.hero{position:relative;overflow:hidden;padding-block:clamp(40px,6vw,88px) clamp(48px,7vw,96px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(32px,5vw,64px);align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:24px;max-width:56ch}
+.hero h1{font-family:var(--display);font-style:italic;font-weight:400;font-optical-sizing:auto;font-size:clamp(2.5rem,5.4vw,4.25rem);line-height:1.06;letter-spacing:-.015em;color:var(--ink)}
+.hero h1 em{font-style:italic;color:var(--coral)}
+.hero .lead{max-width:52ch}
+.hero-stage{position:relative;display:flex;justify-content:center;align-items:center;min-height:660px}
+.ambient{position:absolute;left:50%;top:50%;width:1400px;height:1400px;transform:translate(-50%,-50%);pointer-events:none;overflow:visible}
+.ambient circle{fill:none;stroke:var(--coral);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:sale 16s cubic-bezier(.2,.5,.4,1) infinite}
+.ambient circle:nth-child(1){animation-delay:0s}
+.ambient circle:nth-child(2){animation-delay:-4s}
+.ambient circle:nth-child(3){animation-delay:-8s}
+.ambient circle:nth-child(4){animation-delay:-12s}
+@keyframes sale{0%{transform:scale(.42);opacity:0}12%{opacity:.16}100%{transform:scale(1.02);opacity:0}}
+.small{font-size:.9375rem;color:var(--muted);max-width:52ch}
+.small strong{color:var(--ink);font-weight:600}
+@media (max-width:880px){
+  .hero .wrap{grid-template-columns:1fr}
+  .hero-stage{min-height:0;padding-block:8px}
+  .ambient{width:900px;height:900px}
+}
+
+/* ---------- Tiendas ---------- */
+.stores{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.store{display:inline-flex;align-items:center;gap:12px;min-height:56px;padding:8px 18px 8px 14px;border-radius:var(--r-card);background:var(--ink);color:var(--bg);text-decoration:none;border:1px solid transparent}
+.store:hover{color:var(--bg);background:var(--coral-ink)}
+.store svg{width:26px;height:26px;flex:0 0 auto}
+.store .t{display:flex;flex-direction:column;line-height:1.1}
+.store .t small{font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.store .t span{font-size:1.125rem;font-weight:600}
+.store.pronto{background:transparent;color:var(--ink);border-color:var(--border);cursor:default}
+.store.pronto:hover{background:transparent;color:var(--ink)}
+.store-status{font-size:.9375rem;color:var(--muted)}
+
+/* ---------- El teléfono (la app, tal cual) ---------- */
+.phone{
+  --p-bg:#FFF9F7; --p-surface:#FFFFFF; --p-ink:#182230; --p-muted:#475467;
+  --p-coral:#B63E57; --p-coral-soft:#FFE8EC; --p-teal:#0B6673; --p-sep:#EFE7E4; --p-border:#D9D2CE;
+  --p-ok:#087A5B; --p-ok-soft:#E7F4EF;
+  position:relative;width:300px;height:628px;flex:0 0 auto;border-radius:40px;padding:10px;
+  background:#1F242D;box-shadow:0 30px 60px -24px rgba(24,34,48,.45),0 0 0 1px rgba(255,255,255,.06) inset;
+  color:var(--p-ink);font-family:var(--sans);font-size:15px;line-height:1.4;text-align:left;
+}
+.screen{position:relative;width:100%;height:100%;border-radius:31px;background:var(--p-bg);overflow:hidden;display:flex;flex-direction:column}
+.notch{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:96px;height:26px;border-radius:999px;background:#1F242D;z-index:5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:48px 16px 8px;flex:0 0 auto}
+.topbar .brand{gap:7px;color:var(--p-ink)}
+.topbar .brand .iso{width:22px;height:22px}
+.topbar .wordmark{font-size:17px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;line-height:16px;white-space:nowrap}
+.pill .d{width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.live{background:var(--p-ok-soft);color:var(--p-ok)}
+.pbody{flex:1 1 auto;display:flex;flex-direction:column;padding:0 16px;gap:10px;min-height:0}
+.surface{position:relative;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:0}
+.wave{position:absolute;left:50%;top:50%;width:300px;height:300px;transform:translate(-50%,-50%);pointer-events:none}
+.wave svg{width:100%;height:100%;overflow:visible}
+/* La onda que viaja (DEC-252): temblor por anillo y pulso de dentro a fuera cada 4,5 s. */
+g.ring{transform-box:fill-box;transform-origin:center;animation:tiembla var(--d) ease-in-out var(--dl) infinite alternate}
+g.ring .halo{fill:none;stroke-width:9;opacity:calc(var(--o) * .12)}
+g.ring .line{fill:none;stroke-width:3;opacity:var(--o);animation:var(--pn,pulso3) var(--breath,4.5s) ease-in-out var(--pd) infinite}
+@keyframes tiembla{from{transform:scale(.988)}to{transform:scale(1.012)}}
+@keyframes pulso3{0%,66.667%,100%{stroke-width:3;opacity:var(--o)}33.333%{stroke-width:4.5;opacity:var(--op)}}
+@keyframes pulso4{0%,50%,100%{stroke-width:3;opacity:var(--o)}25%{stroke-width:4.5;opacity:var(--op)}}
+.llega{fill:none;stroke-width:3;transform-box:fill-box;transform-origin:center;animation:llega 4.5s cubic-bezier(.2,.6,.3,1) var(--ld,0s) infinite}
+@keyframes llega{0%{transform:scale(2.1);opacity:0}14%{opacity:.85}82%{opacity:.55}100%{transform:scale(.63);opacity:0}}
+.salen{fill:none;stroke-width:3;transform-box:fill-box;transform-origin:center;opacity:0}
+.wave.enviando .salen{animation:salen 2.6s cubic-bezier(.2,.5,.4,1) var(--ld,0s) infinite}
+.wave.enviando g.ring .line{--breath:2.4s}
+@keyframes salen{0%{transform:scale(.55);opacity:0}12%{opacity:.8}100%{transform:scale(2.2);opacity:0}}
+.presencia{position:relative;z-index:2;border:0;cursor:pointer;font:inherit;font-weight:600;font-size:17px;color:#fff;min-height:60px;padding:14px 26px;border-radius:20px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--p-coral) 92%,#fff) 0%,var(--p-coral) 55%,color-mix(in srgb,var(--p-coral) 92%,var(--p-ink)) 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 8px 24px color-mix(in srgb,var(--p-coral) 32%,transparent);transition:transform .2s ease}
+.presencia:active{transform:scale(.98)}
+.presencia.teal{background:radial-gradient(120% 120% at 50% 18%,color-mix(in srgb,var(--p-teal) 92%,#fff) 0%,var(--p-teal) 52%,color-mix(in srgb,var(--p-teal) 90%,var(--p-ink)) 100%);box-shadow:0 2px 0 rgba(255,255,255,.14) inset,0 8px 24px color-mix(in srgb,var(--p-teal) 32%,transparent)}
+.presencia.acusa{animation:acusa 4.5s ease-out infinite}
+@keyframes acusa{0%,88%{box-shadow:0 2px 0 rgba(255,255,255,.14) inset,0 8px 24px color-mix(in srgb,var(--p-teal) 32%,transparent)}94%{box-shadow:0 2px 0 rgba(255,255,255,.14) inset,0 8px 24px color-mix(in srgb,var(--p-teal) 32%,transparent),0 0 0 10px color-mix(in srgb,var(--p-teal) 22%,transparent)}100%{box-shadow:0 2px 0 rgba(255,255,255,.14) inset,0 8px 24px color-mix(in srgb,var(--p-teal) 32%,transparent)}}
+.ask{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--p-muted);font-size:14px;line-height:20px;padding-inline:8px;min-height:44px}
+.ask .s{display:block;max-width:24ch}
+.ask .ghost{background:none;border:0;font:inherit;color:var(--p-muted);text-decoration:underline;cursor:pointer;padding:4px}
+.mod{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px 5px 9px;font-size:13px;font-weight:600;line-height:18px;white-space:nowrap}
+.mod svg{width:16px;height:16px}
+.mod.voz{background:color-mix(in srgb,var(--p-teal) 12%,#fff);color:var(--p-teal)}
+.mod.chat{background:var(--p-coral-soft);color:var(--p-coral)}
+.avail{display:flex;align-items:center;gap:12px;background:var(--p-surface);border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--p-ink);flex:0 0 auto}
+.avail .tx{display:flex;flex-direction:column;flex:1 1 auto;line-height:18px}
+.avail .l{font-weight:600;font-size:14px}
+.avail .v{font-size:13px;color:var(--p-muted)}
+.avail .v.on{color:var(--p-ok)}
+.urgent{align-self:center;color:var(--p-muted);font-size:13px;text-decoration:underline;padding:4px 8px 10px}
+.pnav{flex:0 0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--p-surface);padding:8px 0 18px}
+.pnav a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--p-muted);font-size:11px;font-weight:500}
+.pnav a .i{display:flex;align-items:center;justify-content:center;width:56px;height:28px;border-radius:999px}
+.pnav a.on{color:var(--p-ink);font-weight:600}
+.pnav a.on .i{background:var(--p-coral-soft)}
+.pnav svg{width:20px;height:20px}
+/* pantalla de disponibilidad */
+.ptitle{font-size:22px;font-weight:600;line-height:28px;margin:6px 0 0}
+.pstatus{font-size:13px;line-height:18px;color:var(--p-ok);font-weight:600;margin:0 0 4px}
+.pcard{background:var(--p-surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--p-muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{flex:1 1 30%;text-align:center;border:1.5px solid var(--p-border);border-radius:8px;padding:7px 8px;font-size:13px;font-weight:500;line-height:18px;white-space:nowrap}
+.chip.on{border-color:var(--p-coral);background:var(--p-coral-soft);color:var(--p-coral);font-weight:600}
+.pbtn{margin-top:auto;margin-bottom:12px;border:0;font:inherit;font-weight:600;font-size:16px;color:#fff;min-height:48px;border-radius:12px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--p-coral) 92%,#fff) 0%,var(--p-coral) 55%,color-mix(in srgb,var(--p-coral) 92%,var(--p-ink)) 100%);
+  box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 2px 6px color-mix(in srgb,var(--p-coral) 28%,transparent)}
+.demo-hint{position:absolute;left:50%;bottom:-8px;transform:translate(-50%,100%);white-space:nowrap;font-size:.8125rem;color:var(--muted)}
+.fig{display:flex;flex-direction:column;align-items:center;gap:14px;margin:0}
+.fig figcaption{font-size:.9375rem;color:var(--muted);text-align:center;max-width:30ch}
+
+/* ---------- Cómo funciona ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,32px);counter-reset:paso}
+.step{display:flex;flex-direction:column;gap:14px;padding-top:20px;border-top:1px solid var(--border);counter-increment:paso}
+.step .n{font-family:var(--display);font-size:.9375rem;color:var(--muted)}
+.step .n::before{content:"Paso " counter(paso)}
+.step h3{font-weight:600;font-size:1.125rem;line-height:1.3}
+.step p{color:var(--muted);font-size:1rem}
+.ui{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;max-width:100%;font-weight:600;font-size:.9375rem;line-height:1.2;border-radius:var(--r-pill);padding:9px 14px;white-space:normal}
+.ui.btn{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,#B63E57 92%,#fff) 0%,#B63E57 55%,color-mix(in srgb,#B63E57 92%,#182230) 100%);box-shadow:0 1px 0 rgba(255,255,255,.16) inset,0 2px 6px rgba(182,62,87,.28);border-radius:12px;padding:11px 16px}
+.ui.busca{background:var(--coral-soft);color:var(--coral-ink)}
+.ui.ok{background:var(--ok-soft);color:var(--ok)}
+.ui.q{background:var(--surface);border:1px solid var(--border);color:var(--ink);font-weight:500}
+.ui svg{width:18px;height:18px;flex:0 0 auto}
+.uis{display:flex;flex-wrap:wrap;gap:8px}
+.honest{margin-top:clamp(40px,5vw,64px);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:center;background:var(--coral-soft);border-radius:var(--r-presence);padding:clamp(24px,4vw,44px)}
+.honest .voice{font-size:clamp(1.5rem,2.6vw,2rem);line-height:1.25;color:var(--coral-ink)}
+.honest p{color:var(--ink)}
+.honest ul{margin:12px 0 0;padding-left:1.2em;color:var(--ink)}
+.honest li{margin-bottom:4px}
+@media (max-width:980px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.steps{grid-template-columns:1fr}.honest{grid-template-columns:1fr}}
+
+/* ---------- Estar disponible ---------- */
+.two{display:grid;grid-template-columns:1fr;gap:clamp(32px,4vw,56px);align-items:center}
+@media (min-width:1120px){.two{grid-template-columns:minmax(0,1fr) auto;gap:32px}}
+.two .copy{display:flex;flex-direction:column;gap:20px;max-width:62ch}
+.two .copy p{color:var(--muted)}
+.two .voice{font-size:clamp(1.375rem,2.2vw,1.75rem);line-height:1.3;border-left:3px solid var(--coral);padding-left:18px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts span{font-size:.9375rem;font-weight:500;padding:6px 12px;border-radius:var(--r-pill);background:var(--surface);border:1px solid var(--border)}
+.opts span.on{border-color:var(--teal);color:var(--teal);background:var(--teal-soft)}
+.phones{display:flex;gap:20px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.phones .fig:nth-child(2){margin-top:56px}
+@media (max-width:700px){.phones .fig:nth-child(2){margin-top:0}}
+
+/* ---------- Lo que no es ---------- */
+.nots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(24px,4vw,64px);margin:0;padding:0;list-style:none}
+.nots li{display:flex;gap:14px;align-items:flex-start;padding-block:18px;border-top:1px solid var(--border)}
+.nots li svg{flex:0 0 auto;width:22px;height:22px;margin-top:3px;color:var(--coral)}
+.nots b{font-weight:600}
+.nots span{color:var(--muted)}
+@media (max-width:640px){.nots{grid-template-columns:1fr}}
+
+/* ---------- Seguridad ---------- */
+.safe{background:var(--surface);border-top:1px solid var(--sep);border-bottom:1px solid var(--sep)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,48px) clamp(24px,3vw,40px)}
+.item{display:flex;flex-direction:column;gap:10px}
+.item .ic{width:44px;height:44px;border-radius:12px;background:var(--coral-soft);color:var(--coral);display:flex;align-items:center;justify-content:center}
+.item .ic svg{width:24px;height:24px}
+.item h3{font-size:1.125rem;font-weight:600;line-height:1.3}
+.item p{color:var(--muted);font-size:1rem}
+.limit{margin-top:clamp(32px,5vw,56px);padding:20px 24px;border-radius:var(--r-card);background:var(--warn-soft);color:var(--warn-ink);font-weight:500;display:flex;gap:14px;align-items:flex-start}
+.limit svg{flex:0 0 auto;width:22px;height:22px;margin-top:2px}
+@media (max-width:900px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.grid3{grid-template-columns:1fr}}
+
+/* ---------- Descarga ---------- */
+.download{text-align:center}
+.download .inner{display:flex;flex-direction:column;align-items:center;gap:24px}
+.download .voice{font-size:clamp(1.75rem,3.6vw,2.75rem);line-height:1.15;max-width:22ch}
+.download .stores{justify-content:center}
+.download .lead{text-align:center}
+
+/* ---------- Pie ---------- */
+footer{border-top:1px solid var(--sep);padding-block:40px 56px;font-size:.9375rem;color:var(--muted)}
+footer .wrap{display:flex;flex-direction:column;gap:24px}
+.legal{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0;padding:0;list-style:none}
+.legal a{color:var(--muted)}
+.legal a:hover{color:var(--ink)}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-end}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  g.ring,g.ring .line,.llega,.salen,.ambient circle,.presencia.acusa{animation:none!important}
+  .llega{transform:scale(1.25);opacity:.5;stroke-dasharray:6 8}
+  .ambient circle{opacity:.08}
+  .ambient circle:nth-child(1){transform:scale(.5)}
+  .ambient circle:nth-child(2){transform:scale(.65)}
+  .ambient circle:nth-child(3){transform:scale(.8)}
+  .ambient circle:nth-child(4){transform:scale(.95)}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="MaSer ONDA, inicio">
+      <svg class="iso" viewBox="0 0 96 96" fill="none" aria-hidden="true"><circle cx="48" cy="48" r="9" fill="var(--coral)"/><circle cx="48" cy="48" r="21" stroke="var(--coral)" stroke-width="6"/><circle cx="48" cy="48" r="36" stroke="var(--coral)" stroke-width="5" opacity=".55"/></svg>
+      <span class="wordmark"><span class="m1">MaSer</span> <span class="m2">ONDA</span></span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#disponible">Estar disponible</a>
+      <a href="#seguridad">Seguridad</a>
+      <a class="cta" href="#descargar">Descargar</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===================== HÉROE ===================== -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="eyebrow">App móvil · Android e iOS · España · español e inglés</p>
+      <h1>Cuando necesites compañía, <em>lanza una ONDA.</em></h1>
+      <p class="lead">MaSer ONDA pone en contacto a personas adultas que quieren compañía con personas disponibles para escuchar o conversar. Una conversación temporal por chat o por voz, para dos o tres. Sin feed, sin seguidores y sin tener que explicar cómo te sientes.</p>
+      <div class="stores" data-stores>
+        <a class="store" data-store="android" href="https://play.google.com/store/apps/details?id=app.maseronda.maser_onda">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.4c-.3.3-.5.8-.5 1.4v16.4c0 .6.2 1.1.5 1.4l.1.1L13 12.5v-.3L3.7 2.3l-.1.1z" fill="#4285F4"/><path d="M16.1 15.6 13 12.5v-.3l3.1-3.1.1.1 3.7 2.1c1 .6 1 1.6 0 2.2l-3.7 2.1h-.1z" fill="#FBBC04"/><path d="M16.2 15.5 13 12.3 3.6 21.7c.4.4.9.4 1.6 0l11-6.2" fill="#EA4335"/><path d="M16.2 9.2 5.2 2.9c-.7-.4-1.2-.3-1.6 0L13 12.3l3.2-3.1z" fill="#34A853"/></svg>
+          <span class="t"><small data-store-label>Muy pronto en</small><span>Google Play</span></span>
+        </a>
+        <a class="store" data-store="ios" href="https://apps.apple.com/es/app/id6809895637">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-3.8zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z" fill="currentColor"/></svg>
+          <span class="t"><small data-store-label>Muy pronto en</small><span>App Store</span></span>
+        </a>
+      </div>
+      <p class="small"><strong>Para mayores de 18 años.</strong> MaSer ONDA ofrece compañía entre personas; no es terapia ni un servicio de emergencias.</p>
+    </div>
+
+    <div class="hero-stage">
+      <svg class="ambient" viewBox="0 0 1400 1400" aria-hidden="true">
+        <circle cx="700" cy="700" r="640"/><circle cx="700" cy="700" r="640"/><circle cx="700" cy="700" r="640"/><circle cx="700" cy="700" r="640"/>
+      </svg>
+      <div class="phone" id="demo" aria-label="Demostración de la pantalla de inicio de MaSer ONDA">
+        <div class="screen">
+          <span class="notch"></span>
+          <div class="topbar">
+            <span class="brand"><svg class="iso" viewBox="0 0 96 96" fill="none" aria-hidden="true"><circle cx="48" cy="48" r="9" fill="#B63E57"/><circle cx="48" cy="48" r="21" stroke="#B63E57" stroke-width="6"/><circle cx="48" cy="48" r="36" stroke="#B63E57" stroke-width="5" opacity=".55"/></svg><span class="wordmark"><span class="m1">MaSer</span> <span class="m2">ONDA</span></span></span>
+            <span class="pill live"><span class="d"></span>Conectado</span>
+          </div>
+          <div class="pbody">
+            <div class="surface">
+              <span class="wave" id="demo-wave">
+                <svg viewBox="0 0 350 350" style="--pn:pulso4" aria-hidden="true">
+                  <g class="ring" style="--d:2.99s;--dl:-3.37s;--o:.7;--op:.94;--pd:0s"><circle class="halo" cx="175" cy="175" r="109.4" stroke="#B63E57"/><circle class="line" cx="175" cy="175" r="109.4" stroke="#B63E57"/></g>
+                  <g class="ring" style="--d:3.54s;--dl:-1.11s;--o:.54;--op:.73;--pd:1.125s"><circle class="halo" cx="175" cy="175" r="148.5" stroke="#B63E57"/><circle class="line" cx="175" cy="175" r="148.5" stroke="#B63E57"/></g>
+                  <g class="ring" style="--d:2.98s;--dl:-3.11s;--o:.38;--op:.51;--pd:2.25s"><circle class="halo" cx="175" cy="175" r="187.6" stroke="#B63E57"/><circle class="line" cx="175" cy="175" r="187.6" stroke="#B63E57"/></g>
+                  <g class="ring" style="--d:3.91s;--dl:-.57s;--o:.24;--op:.32;--pd:3.375s"><circle class="halo" cx="175" cy="175" r="226.7" stroke="#B63E57"/><circle class="line" cx="175" cy="175" r="226.7" stroke="#B63E57"/></g>
+                  <circle class="salen" cx="175" cy="175" r="120" stroke="#B63E57" style="--ld:0s"/>
+                  <circle class="salen" cx="175" cy="175" r="120" stroke="#B63E57" style="--ld:-1.3s"/>
+                </svg>
+              </span>
+              <button class="presencia" id="demo-btn" type="button">Quiero compañía</button>
+              <span class="ask" id="demo-ask" aria-live="polite"><span class="s">Sale una señal, y quien pueda acompañarte la recibe.</span></span>
+            </div>
+            <a class="avail" href="#disponible">
+              <svg width="26" height="14" viewBox="0 0 26 14" aria-hidden="true"><path d="M1 9c4-6 7 6 11 0s7 6 11 0" stroke="#475467" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+              <span class="tx"><span class="l">Estoy disponible</span><span class="v">Desactivado</span></span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5L13 10l-5.5 5.5" stroke="#475467" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="urgent" href="#seguridad">Ayuda urgente</a>
+          </div>
+          <nav class="pnav" aria-hidden="true"><a href="#top" class="on" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 8v8M16 8v8M4 11v2M20 11v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>ONDA</a><a href="#disponible" tabindex="-1"><span class="i"><svg viewBox="0 0 26 18" fill="none"><rect x="1" y="3" width="24" height="12" rx="6" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="9" r="4" fill="currentColor"/></svg></span>Disponible</a><a href="#seguridad" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>Tú</a></nav>
+        </div>
+        <span class="demo-hint">Toca el botón. Es una demostración: no envía nada.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CÓMO FUNCIONA ===================== -->
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Cómo funciona</p>
+      <h2>Lo que pasa cuando <b>lanzas una ONDA</b></h2>
+      <p class="lead">Una decisión principal y lo demás opcional. Pedir compañía tiene que costar poca energía, sobre todo en el momento en que más falta hace.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <span class="n"></span>
+        <span class="ui btn">Quiero compañía</span>
+        <h3>Cuatro decisiones y ya</h3>
+        <p>Qué necesitas ahora (que te escuchen, conversar, distraerte o hacer algo juntos), chat o voz, en qué idioma y cuánto rato. Temas, solo si te apetece. Puedes cambiarlas antes de enviar.</p>
+      </div>
+      <div class="step">
+        <span class="n"></span>
+        <span class="ui busca"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.4" opacity=".5"/></svg>Tu ONDA está yendo</span>
+        <h3>Avisamos a quien está disponible</h3>
+        <p>Por tandas, a miembros compatibles en idioma y modalidad. El aviso no lleva tu nombre ni cómo te sientes: solo idioma, chat o voz, y cuánto rato. Nadie ve quién no respondió.</p>
+      </div>
+      <div class="step">
+        <span class="n"></span>
+        <span class="ui ok"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Ya hay alguien contigo.</span>
+        <h3>Una conversación, de dos o tres</h3>
+        <p>Se abre una sala temporal por chat o por voz. Al empezar no hay quien pide y quien ayuda: solo personas. Pasar de chat a voz solo ocurre si todas las que están lo aceptan.</p>
+      </div>
+      <div class="step">
+        <span class="n"></span>
+        <span class="uis"><span class="ui q">¿Cómo estás respecto a antes?</span><span class="ui q">¿Te gustaría reencontrarte?</span></span>
+        <h3>Al cerrar, unas preguntas opcionales</h3>
+        <p>Puedes no contestar nada. Reencontrarse solo se avisa si los dos decís que sí: una buena conversación no crea seguimiento ni acceso permanente por sí sola.</p>
+      </div>
+    </div>
+
+    <div class="honest">
+      <p class="voice">«Ahora mismo no hemos encontrado a nadie disponible. No es un rechazo: sencillamente no había nadie libre en este rato.»</p>
+      <div>
+        <p>Al otro lado hay personas reales, así que a veces no habrá nadie. Cuando pase, la app lo dice con estas palabras y te deja tres salidas concretas:</p>
+        <ul>
+          <li>mandar otra ONDA,</li>
+          <li>cambiar de modalidad, de chat a voz o al revés,</li>
+          <li>o volver al inicio y elegir otro momento.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ESTAR DISPONIBLE ===================== -->
+<section id="disponible">
+  <div class="wrap two">
+    <div class="copy">
+      <p class="eyebrow">La otra mitad</p>
+      <h2>Estar disponible <b>también es fácil</b></h2>
+      <p>La misma persona puede pedir compañía un día y acompañar otro. No hay dos clases de miembros, ni voluntarios, ni turnos.</p>
+      <p>Activas tu disponibilidad un rato (30 minutos, una hora o dos), según un horario semanal o siempre. Eliges chat, voz o ambas, y el idioma. Te avisamos como máximo una vez por cada ONDA, y nunca sabrás quién no respondió. Puedes dejar pasar un aviso sin dar explicaciones y sin penalización.</p>
+      <div class="opts" aria-label="Modos de disponibilidad"><span>No</span><span>Un rato</span><span>Según horario</span><span class="on">Siempre</span></div>
+      <p class="voice">No tienes que arreglar nada. Estar aquí ya ayuda.</p>
+    </div>
+
+    <div class="phones">
+      <figure class="fig">
+        <div class="phone" aria-label="Pantalla de inicio cuando llega una invitación">
+          <div class="screen">
+            <span class="notch"></span>
+            <div class="topbar">
+              <span class="brand"><svg class="iso" viewBox="0 0 96 96" fill="none" aria-hidden="true"><circle cx="48" cy="48" r="9" fill="#B63E57"/><circle cx="48" cy="48" r="21" stroke="#B63E57" stroke-width="6"/><circle cx="48" cy="48" r="36" stroke="#B63E57" stroke-width="5" opacity=".55"/></svg><span class="wordmark"><span class="m1">MaSer</span> <span class="m2">ONDA</span></span></span>
+              <span class="pill live"><span class="d"></span>Conectado</span>
+            </div>
+            <div class="pbody">
+              <div class="surface">
+                <span class="wave">
+                  <svg viewBox="0 0 350 350" style="--pn:pulso3" aria-hidden="true">
+                    <g class="ring" style="--d:3.12s;--dl:-1.02s;--o:.85;--op:1;--pd:0s"><circle class="halo" cx="175" cy="175" r="123.4" stroke="#0B6673"/><circle class="line" cx="175" cy="175" r="123.4" stroke="#0B6673"/></g>
+                    <g class="ring" style="--d:3.66s;--dl:-2.31s;--o:.62;--op:.84;--pd:1.5s"><circle class="halo" cx="175" cy="175" r="202" stroke="#0B6673"/><circle class="line" cx="175" cy="175" r="202" stroke="#0B6673"/></g>
+                    <g class="ring" style="--d:2.77s;--dl:-.44s;--o:.42;--op:.57;--pd:3s"><circle class="halo" cx="175" cy="175" r="280.5" stroke="#0B6673"/><circle class="line" cx="175" cy="175" r="280.5" stroke="#0B6673"/></g>
+                    <circle class="llega" cx="175" cy="175" r="140" stroke="#0B6673" style="--ld:0s"/>
+                    <circle class="llega" cx="175" cy="175" r="140" stroke="#0B6673" style="--ld:-2.25s"/>
+                  </svg>
+                </span>
+                <button class="presencia teal acusa" type="button" tabindex="-1">Ver la invitación</button>
+                <span class="ask"><span class="s">Una ONDA busca compañía. Tú decides.</span><span class="mod voz"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Por voz · caduca en 9 min</span></span>
+              </div>
+              <span class="avail">
+                <svg width="26" height="14" viewBox="0 0 26 14" aria-hidden="true"><path d="M1 9c4-6 7 6 11 0s7 6 11 0" stroke="#087A5B" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+                <span class="tx"><span class="l">Estoy disponible</span><span class="v on">Siempre</span></span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 4.5L13 10l-5.5 5.5" stroke="#475467" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="urgent">Ayuda urgente</span>
+            </div>
+            <nav class="pnav" aria-hidden="true"><a href="#top" class="on" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 8v8M16 8v8M4 11v2M20 11v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>ONDA</a><a href="#disponible" tabindex="-1"><span class="i"><svg viewBox="0 0 26 18" fill="none"><rect x="1" y="3" width="24" height="12" rx="6" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="9" r="4" fill="currentColor"/></svg></span>Disponible</a><a href="#seguridad" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>Tú</a></nav>
+          </div>
+        </div>
+        <figcaption>Cuando llega una ONDA, la pantalla cambia de color y dice si es por chat o por voz. Tú decides.</figcaption>
+      </figure>
+
+      <figure class="fig">
+        <div class="phone" aria-label="Pantalla de disponibilidad">
+          <div class="screen">
+            <span class="notch"></span>
+            <div class="topbar">
+              <span class="brand"><svg class="iso" viewBox="0 0 96 96" fill="none" aria-hidden="true"><circle cx="48" cy="48" r="9" fill="#B63E57"/><circle cx="48" cy="48" r="21" stroke="#B63E57" stroke-width="6"/><circle cx="48" cy="48" r="36" stroke="#B63E57" stroke-width="5" opacity=".55"/></svg><span class="wordmark"><span class="m1">MaSer</span> <span class="m2">ONDA</span></span></span>
+              <span class="pill live"><span class="d"></span>Conectado</span>
+            </div>
+            <div class="pbody">
+              <p class="ptitle">Disponible</p>
+              <p class="pstatus">Ahora mismo puede llegarte alguien</p>
+              <div class="pcard"><span class="lbl">Estoy disponible</span><div class="chips"><span class="chip">No</span><span class="chip">Un rato</span><span class="chip">Según horario</span><span class="chip on">Siempre</span></div></div>
+              <div class="pcard"><span class="lbl">Cómo</span><div class="chips"><span class="chip on">Chat</span><span class="chip on">Voz</span></div></div>
+              <div class="pcard"><span class="lbl">Idiomas, por orden</span><div class="chips"><span class="chip on">Español</span><span class="chip">Inglés</span></div></div>
+              <button class="pbtn" type="button" tabindex="-1">Guardar</button>
+            </div>
+            <nav class="pnav" aria-hidden="true"><a href="#top" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 8v8M16 8v8M4 11v2M20 11v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>ONDA</a><a href="#disponible" class="on" tabindex="-1"><span class="i"><svg viewBox="0 0 26 18" fill="none"><rect x="1" y="3" width="24" height="12" rx="6" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="9" r="4" fill="currentColor"/></svg></span>Disponible</a><a href="#seguridad" tabindex="-1"><span class="i"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>Tú</a></nav>
+          </div>
+        </div>
+        <figcaption>Cuándo, cómo y en qué idioma. Lo cambias o lo apagas cuando quieras, y la pantalla te dice si ahora mismo puede llegarte alguien.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LO QUE NO ES ===================== -->
+<section id="no-es">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Para que no haya dudas</p>
+      <h2>Lo que MaSer ONDA <b>no es</b></h2>
+      <p class="lead">Se parece poco a lo que ya conoces, y eso es a propósito.</p>
+    </div>
+    <ul class="nots">
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No es una red social.</b> <span>No hay feed, publicaciones, seguidores ni «me gusta». Nadie tiene que publicar nada para estar.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No es una app de citas.</b> <span>No hay perfiles públicos, fotos, porcentajes de compatibilidad ni un directorio de personas.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No es terapia ni un servicio de emergencias.</b> <span>No diagnostica, no trata y no sustituye atención profesional. Y lo dice en la propia app.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No hay bots haciéndose pasar por personas.</b> <span>Al otro lado siempre hay una persona real. Ningún modelo de IA participa en las conversaciones.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No hay vídeo, ni ubicación, ni salas grandes.</b> <span>Chat o voz, para dos o tres personas. Sin geolocalización ni encuentros presenciales.</span></div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><b>No hay rachas ni rankings.</b> <span>Nada te castiga por no responder, y nadie compite por popularidad. Tampoco hay pagos ni publicidad.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== SEGURIDAD ===================== -->
+<section id="seguridad" class="safe">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Seguridad y privacidad</p>
+      <h2>El control lo tienes tú, <b>desde la primera conversación</b></h2>
+    </div>
+    <div class="grid3">
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5M4 12h11M11 8l4 4-4 4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Salir, bloquear y reportar, siempre a mano</h3>
+        <p>Salir es inmediato y no hay que pedir permiso a nadie. Bloquear excluye a esa cuenta en ambos sentidos, también en una conversación de tres. Reportar deja constancia sin revelar quién lo hizo.</p>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.9"/></svg></span>
+        <h3>Un seudónimo, nada más</h3>
+        <p>Entras con Google, o con Apple en iPhone, y eliges un seudónimo. No pedimos teléfono ni documento, y nadie ve tu correo, tu nombre legal ni dónde estás.</p>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.9"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M4 4l16 16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></span>
+        <h3>La voz no se graba</h3>
+        <p>Las salas de voz no se graban. Entrar en voz es una acción explícita de cada persona, y el micrófono solo se activa cuando tú lo decides.</p>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <h3>Tus datos, en la Unión Europea</h3>
+        <p>Se guardan en la UE y se piden los mínimos. Puedes exportar tus datos y borrar la cuenta desde la propia app, sin escribir a nadie.</p>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7c0-1.1.9-2 2-2h2l2 4-2 1.5c1 2.5 3 4.5 5.5 5.5L15 14l4 2v2c0 1.1-.9 2-2 2C10 20 4 14 4 7z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg></span>
+        <h3>Ayuda urgente, aparte del flujo normal</h3>
+        <p>Si estás en peligro, la app te muestra los recursos oficiales de España, como el 112 y el 024, y te deja salir del flujo normal. MaSer ONDA no los sustituye.</p>
+      </div>
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/></svg></span>
+        <h3>Solo para personas adultas</h3>
+        <p>Es para mayores de 18 años. Antes de pedir compañía o ponerte disponible confirmas tu edad y aceptas unas normas breves que valen para toda la comunidad.</p>
+      </div>
+    </div>
+    <p class="limit"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 8v5M12 16v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>MaSer ONDA ofrece compañía entre personas; no es terapia ni un servicio de emergencias. Si estás en peligro inmediato, llama al 112.</span></p>
+  </div>
+</section>
+
+<!-- ===================== DESCARGA ===================== -->
+<section id="descargar" class="download">
+  <div class="wrap inner">
+    <p class="eyebrow">Android e iOS</p>
+    <p class="voice">Para pedir compañía, y para darla.</p>
+    <p class="lead">Una misma app para las dos cosas. Gratis, en español e inglés, sin pagos ni publicidad.</p>
+    <div class="stores" data-stores>
+      <a class="store" data-store="android" href="https://play.google.com/store/apps/details?id=app.maseronda.maser_onda">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.4c-.3.3-.5.8-.5 1.4v16.4c0 .6.2 1.1.5 1.4l.1.1L13 12.5v-.3L3.7 2.3l-.1.1z" fill="#4285F4"/><path d="M16.1 15.6 13 12.5v-.3l3.1-3.1.1.1 3.7 2.1c1 .6 1 1.6 0 2.2l-3.7 2.1h-.1z" fill="#FBBC04"/><path d="M16.2 15.5 13 12.3 3.6 21.7c.4.4.9.4 1.6 0l11-6.2" fill="#EA4335"/><path d="M16.2 9.2 5.2 2.9c-.7-.4-1.2-.3-1.6 0L13 12.3l3.2-3.1z" fill="#34A853"/></svg>
+        <span class="t"><small data-store-label>Muy pronto en</small><span>Google Play</span></span>
+      </a>
+      <a class="store" data-store="ios" href="https://apps.apple.com/es/app/id6809895637">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-3.8zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.8-1.4z" fill="currentColor"/></svg>
+        <span class="t"><small data-store-label>Muy pronto en</small><span>App Store</span></span>
+      </a>
+    </div>
+    <p class="store-status" data-store-status>Ya disponible en Google Play, en España. En iPhone llega en cuanto App Store termine su revisión.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <ul class="legal">
+      <li><a href="https://slopezrap.github.io/maser-onda-legal/privacidad.html">Política de privacidad</a></li>
+      <li><a href="https://slopezrap.github.io/maser-onda-legal/terminos.html">Términos de uso</a></li>
+      <li><a href="https://slopezrap.github.io/maser-onda-legal/normas.html">Normas de convivencia</a></li>
+      <li><a href="https://slopezrap.github.io/maser-onda-legal/seguridad-infantil.html">Seguridad infantil</a></li>
+      <li><a href="https://slopezrap.github.io/maser-onda-legal/eliminar-cuenta.html">Eliminar tu cuenta</a></li>
+    </ul>
+    <div class="foot-row">
+      <div>
+        <p><span class="wordmark" style="font-size:1.125rem"><span class="m1">MaSer</span> <span class="m2">ONDA</span></span></p>
+        <p>Un proyecto independiente hecho en España. Contacto: <a href="mailto:maser@skinms.app">maser@skinms.app</a></p>
+      </div>
+      <p>MaSer ONDA ofrece compañía entre personas; no es terapia ni un servicio de emergencias. © <span data-year>2026</span></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---- Estado de las tiendas. Cambia a 'disponible' cuando cada una esté publicada. ----
+  var TIENDAS = { android: 'disponible', ios: 'pronto' };   // 'pronto' | 'disponible'
+  var ESTADO = {
+    ninguna: 'La app está en prueba cerrada en Google Play y en revisión en App Store. Si quieres probarla antes, escríbenos.',
+    alguna:  'Ya disponible en Google Play, en España. En iPhone llega en cuanto App Store termine su revisión.',
+    todas:   'Disponible en Google Play y en App Store.'
+  };
+  var vivas = 0;
+  document.querySelectorAll('[data-store]').forEach(function(a){
+    var live = TIENDAS[a.getAttribute('data-store')] === 'disponible';
+    var label = a.querySelector('[data-store-label]');
+    if (live) { vivas++; a.classList.remove('pronto'); label.textContent = 'Descárgala en'; }
+    else { a.classList.add('pronto'); a.removeAttribute('href'); label.textContent = 'Muy pronto en'; }
+  });
+  var st = document.querySelector('[data-store-status]');
+  if (st) st.textContent = vivas === 0 ? ESTADO.ninguna : (vivas === 2 ? ESTADO.todas : ESTADO.alguna);
+  var y = document.querySelector('[data-year]'); if (y) y.textContent = String(new Date().getFullYear());
+
+  // ---- La demostración del héroe: idle -> enviando -> acompañada -> idle. No envía nada. ----
+  var btn = document.getElementById('demo-btn'), ask = document.getElementById('demo-ask'), wave = document.getElementById('demo-wave');
+  if (!btn) return;
+  var t1 = null, t2 = null, estado = 'idle';
+  function limpia(){ if (t1) clearTimeout(t1); if (t2) clearTimeout(t2); t1 = t2 = null; }
+  function idle(){
+    limpia(); estado = 'idle';
+    wave.classList.remove('enviando'); btn.classList.remove('teal');
+    btn.textContent = 'Quiero compañía';
+    ask.innerHTML = '<span class="s">Sale una señal, y quien pueda acompañarte la recibe.</span>';
+  }
+  function enviando(){
+    limpia(); estado = 'enviando';
+    wave.classList.add('enviando'); btn.classList.remove('teal');
+    btn.textContent = 'Tu ONDA está yendo';
+    ask.innerHTML = '<span class="s">Estamos buscando a alguien disponible. Puedes cancelar cuando quieras.</span><button class="ghost" type="button" data-cancel>Detener la ONDA</button>';
+    t1 = setTimeout(acompanada, 4200);
+  }
+  function acompanada(){
+    limpia(); estado = 'acompanada';
+    wave.classList.remove('enviando'); btn.classList.add('teal');
+    btn.textContent = 'Entrar en la conversación';
+    ask.innerHTML = '<span class="s"><b>Ya hay alguien contigo.</b> Por chat, durante un rato. Sales cuando quieras.</span>';
+    t2 = setTimeout(idle, 6000);
+  }
+  btn.addEventListener('click', function(){
+    if (estado === 'idle') enviando();
+    else if (estado === 'enviando') acompanada();
+    else idle();
+  });
+  ask.addEventListener('click', function(e){ if (e.target.hasAttribute('data-cancel')) idle(); });
+})();
+</script>
+</body>
+</html>
